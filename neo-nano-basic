@@ -1,0 +1,79 @@
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+#include <avr/power.h>
+#endif
+// NeoPixel data pin
+#define PIN 5
+
+// brightness 0-255
+int brightness = 100;
+
+// Parameter 1 = number of pixels in strip
+// Parameter 2 = Arduino pin number (most are valid)
+// Parameter 3 = pixel type flags, add together as needed:
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+
+Adafruit_NeoPixel strip01 = Adafruit_NeoPixel(8, 6, NEO_GRB + NEO_KHZ800);
+
+// IMPORTANT: To reduce NeoPixel burnout risk, add 1000 uF capacitor across
+// pixel power leads, add 300 - 500 Ohm resistor on first pixel's data input
+// and minimize distance between Arduino and first pixel.  Avoid connecting
+// on a live circuit...if you must, connect GND first.
+// For the ultimate NeoPixel guide, check out:
+// https://learn.adafruit.com/adafruit-neopixel-uberguide/overview
+
+// define color of flicker effect
+// c = color being randomize
+// r = random range - the smaller the number the less variation
+
+int myFlickerColor(int c, int r) {
+  int flicker = random(0, r);
+  c = c - flicker;
+  if (c < 0) c = 0;
+  return c;
+}
+
+void setup() {
+  strip01.begin();
+  strip01.setBrightness(brightness);
+  strip01.show();
+}
+
+void loop() {
+
+  // rear room
+  // set solid colors
+  strip01.setPixelColor(0, 5, 20, 0);
+  strip01.setPixelColor(3, 5, 10, 15);
+  
+  // set flame colors
+  int r = myFlickerColor(30, 10);
+  int g = myFlickerColor(10, 10);
+  int b = myFlickerColor(0, 10);
+  strip01.setPixelColor(1, r, g, b);
+  r = myFlickerColor(40, 10);
+  g = myFlickerColor(15, 10);
+  b = myFlickerColor(0, 10);
+  strip01.setPixelColor(2, r, g, b);
+
+  // front room
+  strip01.setPixelColor(5, 40, 0, 80);
+  strip01.setPixelColor(7, 55, 80, 0);
+
+  //set flame colors
+  r = myFlickerColor(80, 15);
+  g = myFlickerColor(25, 15);
+  b = myFlickerColor(0, 15);
+  strip01.setPixelColor(4, r, g, b);
+  r = myFlickerColor(120, 20);
+  g = myFlickerColor(45, 20);
+  b = myFlickerColor(0, 20);
+  strip01.setPixelColor(6, r, g, b);
+
+  strip01.show();
+
+  delay(random(10, 100));
+}
