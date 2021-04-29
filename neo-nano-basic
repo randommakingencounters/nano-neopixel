@@ -1,13 +1,33 @@
+/*
+  Basic code for the Random Making Encounters NEO-NANO circuit board
+
+  Nothing happens in a vacuum. Thanks to the following:
+
+  Adafruit NeoPixel Uberguide
+  https://learn.adafruit.com/adafruit-neopixel-uberguide
+
+  "If I have seen further it is by standing on the shoulders of Giants."
+  - Isaac Newton
+*/
+
+// these libraries must be installed prior to uploading
+// includes
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
-// NeoPixel data pin
-#define PIN 5
 
-// brightness 0-255
-int brightness = 100;
+// NeoPixel parameters
+#define LED_PIN 2
+#define LED_COUNT 3
 
+// Set initial brightness (0-255)
+int brightness = 255;
+
+// IMPORTANT: To reduce NeoPixel burnout risk, add 1000 uF capacitor across
+// pixel power leads, add 300 - 500 Ohm resistor on first pixel's data input
+// and minimize distance between Arduino and first pixel.  Avoid connecting
+// on a live circuit...if you must, connect GND first.
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
 // Parameter 3 = pixel type flags, add together as needed:
@@ -16,16 +36,9 @@ int brightness = 100;
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 
-Adafruit_NeoPixel strip01 = Adafruit_NeoPixel(8, 6, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip01 = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-// IMPORTANT: To reduce NeoPixel burnout risk, add 1000 uF capacitor across
-// pixel power leads, add 300 - 500 Ohm resistor on first pixel's data input
-// and minimize distance between Arduino and first pixel.  Avoid connecting
-// on a live circuit...if you must, connect GND first.
-// For the ultimate NeoPixel guide, check out:
-// https://learn.adafruit.com/adafruit-neopixel-uberguide/overview
-
-// define color of flicker effect
+// Define color of flicker effect function
 // c = color being randomize
 // r = random range - the smaller the number the less variation
 
@@ -40,40 +53,50 @@ void setup() {
   strip01.begin();
   strip01.setBrightness(brightness);
   strip01.show();
+  randomSeed(analogRead(0));
+  // Set standard LED pins to output
+  for (int i = 4; i <= 6; i++) {
+    pinMode (i, OUTPUT);
+  }
 }
 
 void loop() {
+  // NeoPixel LEDs
+  // Set solid color LEDs
+  // Parameters (LED number, Red, Green, Blue), LED number starts with 0, color values 0-255
+  strip01.setPixelColor(0, 200, 0, 0);
+  strip01.setPixelColor(1, 0, 200, 0);
+  strip01.setPixelColor(2, 0, 0, 200);
+  //strip01.setPixelColor(3, 5, 10, 15);
 
-  // rear room
-  // set solid colors
-  strip01.setPixelColor(0, 5, 20, 0);
-  strip01.setPixelColor(3, 5, 10, 15);
-  
-  // set flame colors
+  // Set flickering color LEDs
+  // Define first color
   int r = myFlickerColor(30, 10);
-  int g = myFlickerColor(10, 10);
+  int g = myFlickerColor(10, 5);
   int b = myFlickerColor(0, 10);
-  strip01.setPixelColor(1, r, g, b);
-  r = myFlickerColor(40, 10);
-  g = myFlickerColor(15, 10);
-  b = myFlickerColor(0, 10);
-  strip01.setPixelColor(2, r, g, b);
+  //strip01.setPixelColor(0, r, g, b);
+  //strip01.setPixelColor(1, r, g, b);
+  //strip01.setPixelColor(2, r, g, b);
+  // Define second color
+  r = myFlickerColor(10, 5);
+  g = myFlickerColor(30, 10);
+  b = myFlickerColor(5, 5);
 
-  // front room
-  strip01.setPixelColor(5, 40, 0, 80);
-  strip01.setPixelColor(7, 55, 80, 0);
+  strip01.setPixelColor(3, r, g, b);
+  //strip01.setPixelColor(7, r, g, b);
 
-  //set flame colors
-  r = myFlickerColor(80, 15);
-  g = myFlickerColor(25, 15);
-  b = myFlickerColor(0, 15);
-  strip01.setPixelColor(4, r, g, b);
-  r = myFlickerColor(120, 20);
-  g = myFlickerColor(45, 20);
-  b = myFlickerColor(0, 20);
-  strip01.setPixelColor(6, r, g, b);
 
   strip01.show();
-
   delay(random(10, 100));
+
+  // Standard LEDs - enable or disable standard LED pins (HIGH = enabled, LOW = disabled)
+  //analogWrite(3, 5);
+  //analogWrite(5, 5);
+  //analogWrite(6, 5);
+  
+  // Standard LEDs - enable or disable standard LED pins (HIGH = enabled, LOW = disabled)
+  digitalWrite(3, LOW);
+  digitalWrite(4, LOW);
+  digitalWrite(5, LOW);
+  digitalWrite(6, LOW);
 }
